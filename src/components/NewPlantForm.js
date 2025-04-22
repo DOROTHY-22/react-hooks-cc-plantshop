@@ -1,28 +1,38 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 function NewPlantForm({ onAddPlant }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    image: "",
-    price: "",
-  });
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  const [name, setName] = useState('');
+  const [image, setImage] = useState('');
+  const [price, setPrice] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
-    fetch("http://localhost:6001/plants", {
-      method: "POST",
+    const newPlant = {
+      name,
+      image,
+      price, 
+    };
+
+    fetch('http://localhost:6001/plants', {
+      method: 'POST',
       headers: {
-        "Content-Type": "Application/JSON",
+        'Content-Type': 'Application/JSON', 
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(newPlant),
     })
-      .then((res) => res.json())
-      .then((newPlant) => onAddPlant(newPlant));
+      .then((r) => r.json())
+      .then((data) => {
+        const sanitizedPlant = {
+          ...data,
+          id: data.id || Date.now(), 
+          price: Number(data.price), 
+          soldOut: false, 
+        };
+        onAddPlant(sanitizedPlant);
+        setName('');
+        setImage('');
+        setPrice('');
+      });
   }
 
   return (
@@ -33,23 +43,23 @@ function NewPlantForm({ onAddPlant }) {
           type="text"
           name="name"
           placeholder="Plant name"
-          value={formData.name}
-          onChange={handleChange}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
           type="text"
           name="image"
           placeholder="Image URL"
-          value={formData.image}
-          onChange={handleChange}
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
         />
         <input
           type="number"
           name="price"
           step="0.01"
           placeholder="Price"
-          value={formData.price}
-          onChange={handleChange}
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
         />
         <button type="submit">Add Plant</button>
       </form>

@@ -1,11 +1,16 @@
-import React from "react";
-import PlantCard from "./PlantCard";
+import PlantCard from './PlantCard';
 
-function PlantList({ plants, onDeletePlant }) {
+function PlantList({ plants, onDelete, onPriceUpdate, onToggleSoldOut }) {
   return (
     <ul className="cards">
       {plants.map((plant) => (
-        <PlantCard key={plant.id} plant={plant} onDeletePlant={onDeletePlant} />
+        <PlantCard
+          key={plant.id} 
+          plant={plant}
+          onDelete={onDelete}
+          onPriceUpdate={onPriceUpdate}
+          onToggleSoldOut={onToggleSoldOut}
+        />
       ))}
     </ul>
   );

@@ -1,60 +1,26 @@
-import React, { useState } from "react";
+import React from 'react';
 
-function NewPlantForm({ onAddPlant }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    image: "",
-    price: "",
-  });
-
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    fetch("http://localhost:6001/plants", {
-      method: "POST",
-      headers: {
-        "Content-Type": "Application/JSON",
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((newPlant) => onAddPlant(newPlant));
-  }
-
+function PlantCard({ plant, onDelete, onPriceUpdate, onToggleSoldOut }) {
   return (
-    <div className="new-plant-form">
-      <h2>New Plant</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Plant name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="image"
-          placeholder="Image URL"
-          value={formData.image}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="price"
-          step="0.01"
-          placeholder="Price"
-          value={formData.price}
-          onChange={handleChange}
-        />
-        <button type="submit">Add Plant</button>
+    <li className="card" data-testid="plant-item">
+      <img src={plant.image} alt={plant.name} />
+      <h4>{plant.name}</h4>
+      <p>Price: {plant.price}</p> {/* Remove .toFixed(2) */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onPriceUpdate({ id: plant.id, price: e.target.price.value });
+        }}
+      >
+        <input type="number" name="price" placeholder="New price" step="0.01" />
+        <button type="submit">Update Price</button>
       </form>
-    </div>
+      <button onClick={() => onDelete(plant.id)}>Delete</button>
+      <button onClick={() => onToggleSoldOut(plant.id)}>
+        {plant.soldOut ? 'Out of Stock' : 'In Stock'}
+      </button>
+    </li>
   );
 }
 
-export default NewPlantForm;
+export default PlantCard;
